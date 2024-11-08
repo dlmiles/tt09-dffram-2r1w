@@ -6,18 +6,18 @@ SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = project.v
+COMPILE_ARGS 	+= -I$(SRC_DIR)
 
 ifneq ($(GATES),yes)
 
 # RTL simulation:
 SIM_BUILD				= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
-COMPILE_ARGS 		+= -I$(SRC_DIR)
 
 else
 
 # Gate level simulation:
-SIM_BUILD				= sim_build/gl
+SIM_BUILD	= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DUSE_POWER_PINS
@@ -33,6 +33,36 @@ endif
 
 # Include the testbench sources:
 VERILOG_SOURCES += $(PWD)/tb.v
+
+ifeq ($(SIM),icarus)
+COMPILE_ARGS    += -DTIMING
+COMPILE_ARGS    += -DUNIT_DELAY=\#1
+COMPILE_ARGS    += $(NOCI_COMPILE_ARGS)
+endif
+
+ifeq ($(SIM),verilator)
+EXTRA_ARGS += -Wno-WIDTHTRUNC
+EXTRA_ARGS += --trace --trace-structs --no-timing
+# FIXME review this (for the maj3.v)
+EXTRA_ARGS += -DFUNCTIONAL
+EXTRA_ARGS += -DUNIT_DELAY=
+#COMPILE_ARGS    += -DUSE_POWER_PINS
+EXTRA_ARGS += $(NOCI_EXTRA_ARGS)
+
+ifeq ($(COVERAGE),yes)
+EXTRA_ARGS += --coverage --coverage-underscore
+endif
+
+ifeq ($(RANDOM_POLICY),zero)
+PLUSARGS += +verilator+rand+reset+0
+else ifeq ($(RANDOM_POLICY),one)
+PLUSARGS += +verilator+rand+reset+1
+else ifeq ($(RANDOM_POLICY),random)
+PLUSARGS += +verilator+rand+reset+2
+endif
+endif
+
+
 TOPLEVEL = tb
 
 # MODULE is the basename of the Python test file
