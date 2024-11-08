@@ -85,21 +85,43 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   wire [ADDRWIDTH-1:0] raddr_curr_a;
   assign raddr_curr_a = {addrhi, addr_a};  // Port A current address
 
+  // This purpose of this is to allow removal on byte granulatity of storage area to meet tile 1x1 limits
+  reg  [ADDRWIDTH-1:0] raddr_xlat_a;
+`ifdef STORAGE_POWER_OF_TWO
+  assign raddr_xlat_a = raddr_curr_a; // No translation
+`else
+  always @(*) begin
+    // each byte here is removed from storage and remapped to zero location
+    case(raddr_curr_a)
+      5'b11100:
+        raddr_xlat_a = 5'b00000;
+      5'b11101:
+        raddr_xlat_a = 5'b00000;
+      5'b11110:
+        raddr_xlat_a = 5'b00000;
+      5'b11111:
+        raddr_xlat_a = 5'b00000;
+      default:
+        raddr_xlat_a = raddr_curr_a;
+    endcase
+  end
+`endif
+
   // ITEM01 cocotb doesn't support this
-  //assign rdata_curr_a = mem[raddr_curr_a][WORDWIDTH-1:0];
+  //assign rdata_curr_a = mem[raddr_xlat_a][WORDWIDTH-1:0];
   generate // ITEM01 generate workaround below
     genvar rab; // read_a bit
     for(rab = 0; rab < WORDWIDTH; rab = rab + 1) begin
-      assign rdata_curr_a[rab] = mem[raddr_curr_a][rab]; // assign 1-bit a time
+      assign rdata_curr_a[rab] = mem[raddr_xlat_a][rab]; // assign 1-bit a time
     end
   endgenerate
 
   always @(posedge clk) begin
-    //rdata_curr_a <= mem[raddr_curr_a][WORDWIDTH-1:0];
+    //rdata_curr_a <= mem[raddr_xlat_a][WORDWIDTH-1:0];
     rdata_buff_a <= rdata_curr_a;
     if (w_en) begin
       // ITEM02 cocotb doesn't support this, see generate workaround below
-      //mem[raddr_curr_a][WORDWIDTH-1:0] <= wword_a[WORDWIDTH-1:0];
+      //mem[raddr_xlat_a][WORDWIDTH-1:0] <= wword_a[WORDWIDTH-1:0];
     end
   end
 
@@ -113,10 +135,10 @@ module tt_um_dlmiles_dffram32x8_2r1w (
     for(wab = 0; wab < WORDWIDTH; wab = wab + 1) begin
       always @(posedge clk) begin
         if (wab < HALFWORDWIDTH && w_en_lo) begin
-          mem[raddr_curr_a][wab] <= wword_a[wab];
+          mem[raddr_xlat_a][wab] <= wword_a[wab];
         end
         if (wab >= HALFWORDWIDTH && w_en_hi) begin
-          mem[raddr_curr_a][wab] <= wword_a[wab];
+          mem[raddr_xlat_a][wab] <= wword_a[wab];
         end
       end
     end
@@ -135,12 +157,34 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   wire [ADDRWIDTH-1:0] raddr_curr_b;
   assign raddr_curr_b = {addrhi, addr_b};  // Port B current address
 
+  // This purpose of this is to allow removal on byte granulatity of storage area to meet tile 1x1 limits
+  reg  [ADDRWIDTH-1:0] raddr_xlat_b;
+`ifdef STORAGE_POWER_OF_TWO
+  assign raddr_xlat_b = raddr_curr_b; // No translation
+`else
+  always @(*) begin
+    // each byte here is removed from storage and remapped to zero location
+    case(raddr_curr_b)
+      5'b11100:
+        raddr_xlat_b = 5'b00000;
+      5'b11101:
+        raddr_xlat_b = 5'b00000;
+      5'b11110:
+        raddr_xlat_b = 5'b00000;
+      5'b11111:
+        raddr_xlat_b = 5'b00000;
+      default:
+        raddr_xlat_b = raddr_curr_b;
+    endcase
+  end
+`endif
+
   // ITEM03 cocotb doesn't support this
-  //assign rdata_curr_b = mem[raddr_curr_b][WORDWIDTH-1:0];
+  //assign rdata_curr_b = mem[raddr_xlat_b][WORDWIDTH-1:0];
   generate // ITEM03 generate workaround below
     genvar rbb; // read_b bit
     for(rbb = 0; rbb < WORDWIDTH; rbb = rbb + 1) begin
-      assign rdata_curr_b[rbb] = mem[raddr_curr_b][rbb]; // assign 1-bit a time
+      assign rdata_curr_b[rbb] = mem[raddr_xlat_b][rbb]; // assign 1-bit a time
     end
   endgenerate
 
