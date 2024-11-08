@@ -8,6 +8,7 @@
 //`define STORAGE_POWER_OF_TWO
 `define STORAGE_MINUS_TWO
 `define STORAGE_MINUS_FOUR
+`define STORAGE_MINUS_SIX
 //`define STORAGE_MINUS_EIGHT
 //`define STORAGE_MINUS_TEN
 //`define STORAGE_MINUS_TWELEVE
@@ -135,6 +136,8 @@ module tt_um_dlmiles_dffram32x8_2r1w (
         raddr_xlat_a = ADDRESS_ZERO;
       5'b11001:
         raddr_xlat_a = ADDRESS_ZERO;
+`ifdef STORAGE_MINUS_SIX
+`endif
       5'b11010:
         raddr_xlat_a = ADDRESS_ZERO;
       5'b11011:
@@ -248,6 +251,8 @@ module tt_um_dlmiles_dffram32x8_2r1w (
         raddr_xlat_b = ADDRESS_ZERO;
       5'b11001:
         raddr_xlat_b = ADDRESS_ZERO;
+`ifdef STORAGE_MINUS_SIX
+`endif
       5'b11010:
         raddr_xlat_b = ADDRESS_ZERO;
       5'b11011:
