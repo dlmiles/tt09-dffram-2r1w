@@ -17,10 +17,13 @@ DI_A Data In Port-A
 DO_B Data Out Port-B
 AD_A Address Port-A
 AD_B Address Port-B
+LOHI_A Nibble (4bit) select Port-A
+LOHI_B Nibble (4bit) select Port-B
 W_EN Write Enable (Port-A implied)
 
-16 pages of 16 nibbles (4-bits) is the total storage.  The high 4-bits of
-address are set via RST_N configuration, see below.
+2 pages of 16 bytes (8-bits) is the total storage.  The high 1-bit of
+address are set via RST_N configuration, see below.  the low 4-bits of
+address are supplied on the signal lines.
 
 ## How to test
 
@@ -35,9 +38,11 @@ The RST_N release (posedge) is used to latch some additional configuration
 bits, so the following values are significant and can only be changed by
 clocking RST_N with a posedge which causes capture:
 
-uio_in[3:0] ADDRHI 4-bits to change the RAM page that can be accessed.  This
+uio_in[0] ADDRHI 1-bit to change the RAM page that can be accessed.  This
 is a way to fill out the TT 1x1 tile space a little and allow the upper
 storage area to be accessible.
+
+uio_in[3:1] unused
 
 uio_in[4] READ_BUFFERED_A enable this will enable a synchronous output buffer
 register on the PORT-A to be enable, so the read value becomes available at
@@ -52,8 +57,9 @@ also the value found at the output port.  When inactive (set logic 0) a
 READ_BEFORE_WRITE policy should be in effect.  TODO check this works as
 expected when READ_BUFFERED_A is active.
 
-uio_in[7] unused, due to it also being the WRITE-ENABLE bit allowing the CLK to
-run freely across reset and an unwanted write occurring.
+uio_in[7] unused, due to it also being the WRITE-ENABLE bit when in normal
+operations so allowing the CLK to run freely across reset and an unwanted
+write occurring.
 
 ## External hardware
 

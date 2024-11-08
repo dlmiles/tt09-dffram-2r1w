@@ -7,6 +7,12 @@ from cocotb.binary import BinaryValue
 from cocotb.triggers import ClockCycles
 
 
+# uio_in
+LOHI_A = 0x10
+LOHI_B = 0x20
+W_EN   = 0x80
+
+
 def calc_ui_in(ui_in: int, aa: int = 0, wd: int = 0) -> int:
     return ui_in | ((aa & 0xf) << 4) | (wd & 0xf)
 
@@ -104,6 +110,8 @@ async def test_project(dut):
                 dut._log.info(f"ui_in ={str(bv_ui_in)} uio_in={str(bv_uio_in)}  AD_A={addr_a:#2x} AD_B={addr_b:#2x}  {wedesc} WDATA_A={wdata_a:#2x}")
 
                 await ClockCycles(dut.clk, 1)
+                bv_uio_in = BinaryValue(tmp_uio_in | LOHI_A, n_bits=8)
+                dut.uio_in.value = bv_uio_in
 
                 tmp_uo_out = dut.uo_out.value
                 if tmp_uo_out.is_resolvable:
@@ -113,6 +121,12 @@ async def test_project(dut):
                     rdata_a = 0
                     rdata_b = 0
                 dut._log.info(f"uo_out={str(tmp_uo_out)}  RDATA_A={rdata_a} RDATA_B={rdata_b}")
+
+                await ClockCycles(dut.clk, 1)
+                bv_uio_in = BinaryValue(tmp_uio_in, n_bits=8)
+                dut.uio_in.value = bv_uio_in
+
+
 
             await ClockCycles(dut.clk, 10)
 

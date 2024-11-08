@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_dlmiles_dffram32x4_2r1w (
+module tt_um_dlmiles_dffram32x8_2r1w (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -21,9 +21,10 @@ module tt_um_dlmiles_dffram32x4_2r1w (
   localparam AWIDTH = 4;  // external address width
   localparam DWIDTH = 4;  // external data width
 
-  localparam WORDWIDTH = DWIDTH;
-  localparam ADDRWIDTH = AHIWIDTH + AWIDTH;
-  localparam ADDRCOUNT = 2 ** ADDRWIDTH;
+  localparam WORDWIDTH     = DWIDTH + DWIDTH;
+  localparam HALFWORDWIDTH = DWIDTH;
+  localparam ADDRWIDTH     = AHIWIDTH + AWIDTH;
+  localparam ADDRCOUNT     = 2 ** ADDRWIDTH;
 
   // alias external signals
 
@@ -32,7 +33,13 @@ module tt_um_dlmiles_dffram32x4_2r1w (
   wire [DWIDTH-1:0] wdata_a;
   wire [DWIDTH-1:0] rdata_a;
   wire [DWIDTH-1:0] rdata_b;
+  wire              lohi_a;
+  wire              lohi_b;
   wire              w_en;
+
+  wire [WORDWIDTH-1:0] wword_a;
+  wire [WORDWIDTH-1:0] rword_a;
+  wire [WORDWIDTH-1:0] rword_b;
 
 
   // Configuration mode
@@ -92,24 +99,33 @@ module tt_um_dlmiles_dffram32x4_2r1w (
     rdata_buff_a <= rdata_curr_a;
     if (w_en) begin
       // ITEM02 cocotb doesn't support this, see generate workaround below
-      //mem[raddr_curr_a][WORDWIDTH-1:0] <= wdata_a[WORDWIDTH-1:0];
+      //mem[raddr_curr_a][WORDWIDTH-1:0] <= wword_a[WORDWIDTH-1:0];
     end
   end
 
+  wire w_en_lo;
+  assign w_en_lo = w_en &  lohi_a;
+  wire w_en_hi;
+  assign w_en_hi = w_en & !lohi_a;
+  assign wword_a = {wdata_a, wdata_a};  // repeated so connection is correct in generate block
   generate // ITEM02 generate workaround below
     genvar wab; // write_a bit
     for(wab = 0; wab < WORDWIDTH; wab = wab + 1) begin
       always @(posedge clk) begin
-        if (w_en) begin
-          mem[raddr_curr_a][wab] <= wdata_a[wab];
+        if (wab < HALFWORDWIDTH && w_en_lo) begin
+          mem[raddr_curr_a][wab] <= wword_a[wab];
+        end
+        if (wab >= HALFWORDWIDTH && w_en_hi) begin
+          mem[raddr_curr_a][wab] <= wword_a[wab];
         end
       end
     end
   endgenerate
 
   // MUX bypass (for write-through), or buffered or unbuffered read output.
-  assign rdata_a = (write_through & w_en) ? wdata_a :
+  assign rword_a = (write_through & w_en) ? wword_a :
                    ((      read_buffer_a) ? rdata_buff_a : rdata_curr_a);
+  assign rdata_a = (lohi_a) ? rword_a[7:4] : rword_a[3:0];
 
 
   // Port B
@@ -133,7 +149,8 @@ module tt_um_dlmiles_dffram32x4_2r1w (
   end
 
   // buffered or unbuffered read output.
-  assign rdata_b = (read_buffer_b) ? rdata_buff_b : rdata_curr_b;
+  assign rword_b = (read_buffer_b) ? rdata_buff_b : rdata_curr_b;
+  assign rdata_b = (lohi_b) ? rword_b[7:4] : rword_b[3:0];
 
 
   // Module ports assignments
@@ -147,6 +164,8 @@ module tt_um_dlmiles_dffram32x4_2r1w (
   assign wdata_a[3:0] = ui_in[3:0];
   assign addr_a [3:0] = ui_in[7:4];
   assign addr_b [3:0] = uio_in[3:0];
+  assign lohi_a       = uio_in[4];
+  assign lohi_b       = uio_in[5];
   assign w_en         = uio_in[7];
 
   // List all unused inputs to prevent warnings
