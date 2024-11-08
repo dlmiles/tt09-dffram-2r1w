@@ -3,7 +3,7 @@ project:
   title:        "Tiny RAM DFF 2r1w"      # Project title
   author:       "Darryl Miles"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "RAM made from DFF 2r1w (64x4)" # One line description of what your project does
+  description:  "RAM made from DFF 2r1w (32x4)" # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     50000000  # Clock frequency in Hz (or 0 if not applicable)
 
@@ -11,7 +11,7 @@ project:
   tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_dlmiles_dffram64x4_2r1w"
+  top_module:  "tt_um_dlmiles_dffram32x4_2r1w"
 
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.

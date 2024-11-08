@@ -45,7 +45,7 @@ module tb ();
 `endif
 
   // Replace tt_um_example with your module name:
-  tt_um_dlmiles_dffram64x4_2r1w dut (
+  tt_um_dlmiles_dffram32x4_2r1w dut (
       // Include power ports for the Gate Level test:
 `ifdef USE_POWER_PINS
       .VPWR   (VPWR),		//i

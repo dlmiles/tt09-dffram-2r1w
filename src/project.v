@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_dlmiles_dffram64x4_2r1w (
+module tt_um_dlmiles_dffram32x4_2r1w (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -17,7 +17,7 @@ module tt_um_dlmiles_dffram64x4_2r1w (
 );
 
 
-  localparam AHIWIDTH = 2;  // used to fill out tile area
+  localparam AHIWIDTH = 1;  // used to fill out tile area
   localparam AWIDTH = 4;  // external address width
   localparam DWIDTH = 4;  // external data width
 
