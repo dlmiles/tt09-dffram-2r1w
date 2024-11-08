@@ -5,6 +5,15 @@
 
 `default_nettype none
 
+//`define STORAGE_POWER_OF_TWO
+`define STORAGE_MINUS_TWO
+`define STORAGE_MINUS_FOUR
+`define STORAGE_MINUS_EIGHT
+`define STORAGE_MINUS_TEN
+`define STORAGE_MINUS_TWELEVE
+`define STORAGE_MINUS_FOURTEEN
+//`define STORAGE_MINUS_SIXTEEN
+
 module tt_um_dlmiles_dffram32x8_2r1w (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
@@ -25,6 +34,8 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   localparam HALFWORDWIDTH = DWIDTH;
   localparam ADDRWIDTH     = AHIWIDTH + AWIDTH;
   localparam ADDRCOUNT     = 2 ** ADDRWIDTH;
+
+  localparam ADDRESS_ZERO  = {ADDRWIDTH{1'b0}};
 
   // alias external signals
 
@@ -93,41 +104,55 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   always @(*) begin
     // each byte here is removed from storage and remapped to zero location
     case(raddr_curr_a)
+`ifdef STORAGE_MINUS_SIXTEEN
       5'b10000:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b10001:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
+`ifdef STORAGE_MINUS_FOURTEEN
       5'b10010:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b10011:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
 
+`ifdef STORAGE_MINUS_TWELEVE
       5'b10100:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b10101:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
+`ifdef STORAGE_MINUS_TEN
       5'b10110:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b10111:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
 
+`ifdef STORAGE_MINUS_EIGHT
       5'b11000:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b11001:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b11010:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b11011:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
 
+`ifdef STORAGE_MINUS_FOUR
       5'b11100:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b11101:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
+`ifdef STORAGE_MINUS_TWO
       5'b11110:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
       5'b11111:
-        raddr_xlat_a = 5'b00000;
+        raddr_xlat_a = ADDRESS_ZERO;
+`endif
       default:
         raddr_xlat_a = raddr_curr_a;
     endcase
@@ -192,41 +217,55 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   always @(*) begin
     // each byte here is removed from storage and remapped to zero location
     case(raddr_curr_b)
+`ifdef STORAGE_MINUS_SIXTEEN
       5'b10000:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b10001:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
+`ifdef STORAGE_MINUS_FOURTEEN
       5'b10010:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b10011:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
 
+`ifdef STORAGE_MINUS_TWELEVE
       5'b10100:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b10101:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
+`ifdef STORAGE_MINUS_TEN
       5'b10110:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b10111:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
 
+`ifdef STORAGE_MINUS_EIGHT
       5'b11000:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b11001:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b11010:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b11011:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
 
+`ifdef STORAGE_MINUS_FOUR
       5'b11100:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b11101:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
+`ifdef STORAGE_MINUS_TWO
       5'b11110:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
       5'b11111:
-        raddr_xlat_b = 5'b00000;
+        raddr_xlat_b = ADDRESS_ZERO;
+`endif
       default:
         raddr_xlat_b = raddr_curr_b;
     endcase
