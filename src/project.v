@@ -93,6 +93,10 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   always @(*) begin
     // each byte here is removed from storage and remapped to zero location
     case(raddr_curr_a)
+      5'b11000:
+        raddr_xlat_a = 5'b00000;
+      5'b11001:
+        raddr_xlat_a = 5'b00000;
       5'b11010:
         raddr_xlat_a = 5'b00000;
       5'b11011:
@@ -169,6 +173,10 @@ module tt_um_dlmiles_dffram32x8_2r1w (
   always @(*) begin
     // each byte here is removed from storage and remapped to zero location
     case(raddr_curr_b)
+      5'b11000:
+        raddr_xlat_b = 5'b00000;
+      5'b11001:
+        raddr_xlat_b = 5'b00000;
       5'b11010:
         raddr_xlat_b = 5'b00000;
       5'b11011:
